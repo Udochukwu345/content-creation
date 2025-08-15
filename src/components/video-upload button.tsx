@@ -20,39 +20,45 @@ export default function VideoUploadButton() {
   const [error, setError] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
 
-  async function handleFileChange(e) {
-    const file = e.target.files[0];
+interface HandleFileChangeEvent extends React.ChangeEvent<HTMLInputElement> {}
+
+interface PublicUrlData {
+    publicUrl: string;
+}
+
+async function handleFileChange(e: HandleFileChangeEvent): Promise<void> {
+    const file: File | undefined = e.target.files?.[0];
     if (!file) return;
 
     setUploading(true);
     setError(null);
 
     try {
-      const fileName = `${Date.now()}-${file.name}`;
+        const fileName: string = `${Date.now()}-${file.name}`;
 
-      // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from("videos") // your bucket name
-        .upload(fileName, file);
+        // Upload to Supabase Storage
+        const { error: uploadError }: { error: Error | null } = await supabase.storage
+            .from("videos") // your bucket name
+            .upload(fileName, file);
 
-      if (uploadError) throw uploadError;
+        if (uploadError) throw uploadError;
 
-      // Get public URL
-      const { data } = supabase.storage
-        .from("videos")
-        .getPublicUrl(fileName);
+        // Get public URL
+        const { data }: { data: PublicUrlData } = supabase.storage
+            .from("videos")
+            .getPublicUrl(fileName);
 
-      setVideoUrl(data.publicUrl);
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unknown error occurred.");
-      }
+        setVideoUrl(data.publicUrl);
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            setError(err.message);
+        } else {
+            setError("An unknown error occurred.");
+        }
     } finally {
-      setUploading(false);
+        setUploading(false);
     }
-  }
+}
 
   return (
     <div className="flex flex-col items-center gap-3">
