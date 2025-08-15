@@ -8,7 +8,7 @@ import { createClient } from "../../supabase/server";
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
-  const fullName = formData.get("full_name")?.toString() || '';
+  const fullName = formData.get("full_name")?.toString() || "";
   const supabase = await createClient();
   const origin = headers().get("origin");
 
@@ -20,7 +20,10 @@ export const signUpAction = async (formData: FormData) => {
     );
   }
 
-  const { data: { user }, error } = await supabase.auth.signUp({
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -28,12 +31,11 @@ export const signUpAction = async (formData: FormData) => {
       data: {
         full_name: fullName,
         email: email,
-      }
+      },
     },
   });
 
   console.log("After signUp", error);
-
 
   if (error) {
     console.error(error.code + " " + error.message);
@@ -42,23 +44,21 @@ export const signUpAction = async (formData: FormData) => {
 
   if (user) {
     try {
-      const { error: updateError } = await supabase
-        .from('users')
-        .insert({
-          id: user.id,
-          name: fullName,
-          full_name: fullName,
-          email: email,
-          user_id: user.id,
-          token_identifier: user.id,
-          created_at: new Date().toISOString()
-        });
+      const { error: updateError } = await supabase.from("users").insert({
+        id: user.id,
+        name: fullName,
+        full_name: fullName,
+        email: email,
+        user_id: user.id,
+        token_identifier: user.id,
+        created_at: new Date().toISOString(),
+      });
 
       if (updateError) {
-        console.error('Error updating user profile:', updateError);
+        console.error("Error updating user profile:", updateError);
       }
     } catch (err) {
-      console.error('Error in user profile creation:', err);
+      console.error("Error in user profile creation:", err);
     }
   }
 
@@ -74,16 +74,72 @@ export const signInAction = async (formData: FormData) => {
   const password = formData.get("password") as string;
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
   if (error) {
+    // Check if it's an email not confirmed error
+    if (
+      error.message.includes("Email not confirmed") ||
+      error.message.includes("email_not_confirmed")
+    ) {
+      return encodedRedirect(
+        "error",
+        "/sign-in",
+        "Please check your email and click the verification link to activate your account. If you haven't received the email, please check your spam folder.",
+      );
+    }
     return encodedRedirect("error", "/sign-in", error.message);
   }
 
+  // Check if user exists but email is not confirmed
+  if (data.user && !data.user.email_confirmed_at) {
+    return encodedRedirect(
+      "error",
+      "/sign-in",
+      "Your email address has not been verified yet. Please check your email and click the verification link to complete your registration.",
+    );
+  }
+
   return redirect("/dashboard");
+};
+
+export const resendVerificationAction = async (formData: FormData) => {
+  const email = formData.get("email") as string;
+  const supabase = await createClient();
+  const origin = headers().get("origin");
+
+  if (!email) {
+    return encodedRedirect(
+      "error",
+      "/sign-in",
+      "Email is required to resend verification",
+    );
+  }
+
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email: email,
+    options: {
+      emailRedirectTo: `${origin}/auth/callback`,
+    },
+  });
+
+  if (error) {
+    return encodedRedirect(
+      "error",
+      "/sign-in",
+      "Failed to resend verification email. Please try again.",
+    );
+  }
+
+  return encodedRedirect(
+    "success",
+    "/sign-in",
+    "Verification email sent! Please check your inbox and click the link to verify your account.",
+  );
 };
 
 export const forgotPasswordAction = async (formData: FormData) => {
