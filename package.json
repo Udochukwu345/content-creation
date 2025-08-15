@@ -1,9 +1,12 @@
 {
+  "homepage": "https://Udochukwu345.github.io/content-creation",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",
