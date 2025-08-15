@@ -5,7 +5,7 @@ import { Video, BookOpen, Search, UserCircle } from "lucide-react";
 import UserProfile from "./user-profile";
 
 export default async function Navbar() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
@@ -21,13 +21,13 @@ export default async function Navbar() {
 
         <div className="hidden md:flex gap-6 items-center">
           <Link
-            href="#explore"
+            href="/explore"
             className="text-sm font-medium text-gray-700 hover:text-blue-600"
           >
             Explore
           </Link>
           <Link
-            href="#"
+            href="/categories"
             className="text-sm font-medium text-gray-700 hover:text-blue-600"
           >
             Categories
