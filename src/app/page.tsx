@@ -203,7 +203,7 @@ export default async function Home() {
             style={{ animationDelay: "600ms" }}
           >
             <Link href="/explore">
-              <Button variant="outline" className="gap-2">
+              <Button className="gap-2">
                 Explore All Categories
                 <ChevronRight className="h-4 w-4" />
               </Button>
