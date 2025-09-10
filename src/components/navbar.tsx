@@ -5,14 +5,14 @@ import { Video, BookOpen, Search, UserCircle } from "lucide-react";
 import UserProfile from "./user-profile";
 
 export default async function Navbar() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
   } = await (await supabase).auth.getUser();
 
   return (
-    <nav className="w-full border-b border-gray-200 bg-white py-2">
+     <nav className="w-full border-b border-gray-200 bg-white py-2">
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" prefetch className="text-xl font-bold flex items-center">
           <Video className="w-6 h-6 mr-2 text-blue-600" />
@@ -21,13 +21,13 @@ export default async function Navbar() {
 
         <div className="hidden md:flex gap-6 items-center">
           <Link
-            href="#explore"
+            href="/explore"
             className="text-sm font-medium text-gray-700 hover:text-blue-600"
           >
             Explore
           </Link>
           <Link
-            href="#"
+            href="/categories"
             className="text-sm font-medium text-gray-700 hover:text-blue-600"
           >
             Categories

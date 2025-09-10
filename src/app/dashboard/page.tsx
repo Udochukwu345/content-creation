@@ -1,4 +1,5 @@
 import DashboardNavbar from "@/components/dashboard-navbar";
+import VideoUploadButton from "@/components/video-upload button";
 import {
   InfoIcon,
   UserCircle,
@@ -358,6 +359,10 @@ export default async function Dashboard() {
                   </div>
                 </CardContent>
               </Card>
+        
+
+
+<VideoUploadButton />
             </div>
           </div>
         </div>
