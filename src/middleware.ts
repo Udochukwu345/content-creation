@@ -6,8 +6,8 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    https://zqlaohmrnnzqgryvcvky.supabase.co,
+    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxbGFvaG1ybm56cWdyeXZjdmt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0MjgzMzEsImV4cCI6MjA2NDAwNDMzMX0.lOpSRPkT-AEc6EYYcFHWao9hTEOPYCikOjtiSTcMBWA,
     {
       cookies: {
         getAll() {
